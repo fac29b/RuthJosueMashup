@@ -2,6 +2,12 @@
 import express from 'express';
 import { SuperfaceClient } from '@superfaceai/one-sdk';
 import cors from 'cors';  // Import the cors middleware;
+import { OpenAI } from 'openai'; // Import the OpenAI package
+import dotenv from 'dotenv';
+dotenv.config();
+
+
+
 
 const app = express();
 app.set('trust proxy', true);
@@ -11,19 +17,18 @@ app.use(cors());  // Enable CORS
 const sdk = new SuperfaceClient();
 
 async function findLocation(ip) {
-  console.log(ip)
-    // Handle loopback address as a special case
-    if (ip === '::1' || ip === '::ffff:127.0.0.1') {
-      return {
-        // Provide default or sample geolocation information
-        ipAddress: ip,
-        country_name: 'Sample Country',
-        state_prov: 'Sample State',
-        city: 'Sample City',
-        latitude: '0.0',
-        longitude: '0.0',
-      };
-    }
+      // Handle loopback address as a special case
+      if (ip === '::1' || ip === '::ffff:127.0.0.1') {
+        return {
+          // Provide default or sample geolocation information
+          ipAddress: ip,
+          country_name: 'Sample Country',
+          state_prov: 'Sample State',
+          city: 'London',
+          latitude: '0.0',
+          longitude: '0.0',
+        };
+      }
   
     // Load the profile
     const profile = await sdk.getProfile('address/ip-geolocation@1.0.1');
@@ -44,6 +49,8 @@ async function findLocation(ip) {
           },
         }
       );
+
+      
   
       // Handle the result
       const data = result.unwrap();
@@ -75,39 +82,72 @@ async function weather(city) {
 
   // Handle the result
   try {
-    const data = result.unwrap();
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
+
+   // Handle the result
+   const data = result.unwrap();
+   return data;
+ } catch (error) {
+   console.error(error);
+   return {
+     ipAddress: ip,
+     country_name: 'Unknown Country',
+     state_prov: 'Unknown State',
+     city: 'Unknown City',
+     latitude: '0.0',
+     longitude: '0.0',
+   };
+ }
 }
 
-app.get('/', async (req, res) => {
+async function getOpenAIResponse(city) {
+ 
+  const openai = new OpenAI(process.env.OPENAI_API_KEY); // Replace with your actual OpenAI API key
+    
+    // Example prompt: "Generate a short description about {city}"
+    const prompt = `Generate a short description about ${city}`;
+  
+    try {
+      // Assuming there is a method like 'createCompletion' or similar
+      const response = await openai.chat.completions.create({
+        
+      max_tokens: 150,
+        n: 1,messages: [
+          { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: prompt },
+        ],
+        model: "gpt-3.5-turbo",
+      });
+  
+      // Extract the generated text from the response
+      const generatedText = response.choices[0].message.content || 'No description available.';
+      return generatedText;
+    } catch (error) {
+      console.error(error);
+      return 'Error generating description';
+    }
+  }
+
+  app.get('/', async (req, res) => {
     try {
       const location = await findLocation(req.ip);
-      console.log('Location:', location)
+      console.log('Location:', location);
   
       // Check if the city is present in the location response
-      const city = location && location.addressLocality ? location.addressLocality : 'London';
+      const city = location && location.city ? location.city : 'London';
   
       // Pass the city to the weather function
       const weatherData = await weather(city);
+      const openaiResponse = await getOpenAIResponse(city);
   
-      res.send(weatherData);
+      res.send({ location, weatherData, openaiResponse });
+  
     } catch (error) {
-      if (error.name === 'MappedHTTPError' && error.statusCode === 404) {
-        // Extract the city name from the error detail
-        const cityName = error.properties && error.properties.detail ? error.properties.detail : 'unknown city';
-  
-        // Handle 404 Not Found specifically for weather API
-        res.status(404).send(`Weather information for ${cityName} not found. Please provide a valid city name.`);
-      } else {
-        // Handle other errors with a generic message
-        console.error(error);  // Log the error for debugging purposes
-        res.status(500).send('Internal Server Error');
-      }
+      // Handle errors here
+      console.error(error);
+      res.status(500).send('Internal Server Error');
     }
   });
+  
   
   
   

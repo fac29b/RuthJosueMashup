@@ -26,3 +26,10 @@ body {
     font-size: 2em;
     color: #4CAF50; /* Green */
 }
+
+#openai-response {
+    margin-top: 20px;
+    font-size: 1em;
+    color: #333; /* Dark gray */
+    line-height: 1.5;
+}
