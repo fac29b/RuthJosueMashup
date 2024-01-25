@@ -1,43 +1,28 @@
-
 import express from 'express';
 import { SuperfaceClient } from '@superfaceai/one-sdk';
-import cors from 'cors';  // Import the cors middleware;
-import { OpenAI } from 'openai'; // Import the OpenAI package
+import cors from 'cors';
+import { OpenAI } from 'openai';
 import dotenv from 'dotenv';
 dotenv.config();
 
-
-
-
 const app = express();
 app.set('trust proxy', true);
-
-app.use(cors());  // Enable CORS
+app.use(cors());
 
 const sdk = new SuperfaceClient();
 
-async function findLocation(ip) {
-      // Handle loopback address as a special case
-      if (ip === '::1' || ip === '::ffff:127.0.0.1') {
-        return {
-          // Provide default or sample geolocation information
-          ipAddress: ip,
-          country_name: 'Sample Country',
-          state_prov: 'Sample State',
-          city: 'London',
-          latitude: '0.0',
-          longitude: '0.0',
-        };
-      }
-  
+async function findLocation(latitude, longitude) {
+  // Handle the case where latitude and longitude are provided
+  if (latitude && longitude) {
     // Load the profile
     const profile = await sdk.getProfile('address/ip-geolocation@1.0.1');
-  
+
     // Use the profile
     try {
       const result = await profile.getUseCase('IpGeolocation').perform(
         {
-          ipAddress: ip,
+          latitude: latitude,
+          longitude: longitude,
           city: 'London', // Provide a default or sample city value
         },
         {
@@ -50,8 +35,6 @@ async function findLocation(ip) {
         }
       );
 
-      
-  
       // Handle the result
       const data = result.unwrap();
       return data;
@@ -59,7 +42,21 @@ async function findLocation(ip) {
       console.error(error);
     }
   }
+
   
+
+  // Handle default or sample geolocation information
+  return {
+    ipAddress: '0.0.0.0',
+    country_name: 'Sample Country',
+    state_prov: 'Sample State',
+    city: 'London',
+    latitude: '0.0',
+    longitude: '0.0',
+  };
+}
+
+
 async function weather(city) {
   // Load the profile
   const profile = await sdk.getProfile('weather/current-city@1.0.3');
@@ -79,26 +76,24 @@ async function weather(city) {
       },
     }
   );
-
-  // Handle the result
   try {
 
-   // Handle the result
-   const data = result.unwrap();
-   return data;
- } catch (error) {
-   console.error(error);
-   return {
-     ipAddress: ip,
-     country_name: 'Unknown Country',
-     state_prov: 'Unknown State',
-     city: 'Unknown City',
-     latitude: '0.0',
-     longitude: '0.0',
-   };
- }
+    // Handle the result
+    const data = result.unwrap();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {
+      ipAddress: ip,
+      country_name: 'Unknown Country',
+      state_prov: 'Unknown State',
+      city: 'Unknown City',
+      latitude: '0.0',
+      longitude: '0.0',
+    };
+  }
+ 
 }
-
 async function getOpenAIResponse(city) {
  
   const openai = new OpenAI(process.env.OPENAI_API_KEY); // Replace with your actual OpenAI API key
@@ -126,33 +121,34 @@ async function getOpenAIResponse(city) {
       return 'Error generating description';
     }
   }
+app.get('/', async (req, res) => {
+  try {
+    // Use latitude and longitude from the request
+    const { latitude, longitude } = req.query;
+    const location = await findLocation(latitude, longitude);
+    console.log('Location:', location);
 
-  app.get('/', async (req, res) => {
-    try {
-      const location = await findLocation(req.ip);
-      console.log('Location:', location);
-  
-      // Check if the city is present in the location response
-      const city = location && location.city ? location.city : 'London';
-  
-      // Pass the city to the weather function
-      const weatherData = await weather(city);
-      const openaiResponse = await getOpenAIResponse(city);
-  
-      res.send({ location, weatherData, openaiResponse });
-  
-    } catch (error) {
-      // Handle errors here
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  
-  
-  
-  
-  
+    // Check if the city is present in the location response
+    const city = location && location.city ? location.city : 'London';
 
-app.listen(3003, () => {
-  console.log('SERVER RUNNING AT PORT 3003');
+    // Pass the city to the weather function
+    const weatherData = await weather(city);
+    const openaiResponse = await getOpenAIResponse(city);
+
+
+    res.send({
+      location: location || {},
+      weatherData: weatherData || {},
+      openaiResponse: openaiResponse || {},
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+
+   
+});
+
+app.listen(3007, () => {
+  console.log('SERVER RUNNING AT PORT 3007');
 });
