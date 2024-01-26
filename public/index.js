@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // Use the browser's geolocation API to get the user's location
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check if OpenAI response data is present before updating the UI
     if (data.openaiResponse) {
-      openaiResponseElement.textContent = `OpenAI Response: ${data.openaiResponse}`;
+      openaiResponseElement.textContent = `${data.openaiResponse}`;
     } else {
       openaiResponseElement.textContent = 'OpenAI Response: Unknown';
     }
