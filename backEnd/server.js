@@ -96,7 +96,7 @@ async function weather(city) {
 }
 async function getOpenAIResponse(city) {
  
-  const openai = new OpenAI(process.env.OPENAI_API_KEY); // Replace with your actual OpenAI API key
+  const openai = new OpenAI({apiKey: }); // Replace with your actual OpenAI API key
     
     // Example prompt: "Generate a short description about {city}"
     const prompt = `Generate a short description about ${city}`;
