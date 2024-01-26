@@ -57,7 +57,7 @@ async function findLocation(latitude, longitude) {
   };
 }
 
-async function weather(city) {
+export async function weather(city) {
   // Load the profile
   const profile = await sdk.getProfile('weather/current-city@1.0.3');
 
@@ -91,7 +91,7 @@ async function weather(city) {
 }
 
  
-async function getOpenAIResponse(city) {
+export async function getOpenAIResponse(city) {
   const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
   const prompt = `Generate a short description about ${city}`;
@@ -146,3 +146,6 @@ async function getOpenAIResponse(city) {
 app.listen(3007, () => {
   console.log('SERVER RUNNING AT PORT 3007');
 });
+
+
+export { app, findLocation }; 
