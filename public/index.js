@@ -1,3 +1,16 @@
+const toggleSwitch = document.querySelector("input");
+const body = document.querySelector("body");
+toggleSwitch.addEventListener("change", function() {
+  const body = document.querySelector("body");
+  
+  // Toggle background color based on checkbox state
+  if (toggleSwitch.checked) {
+    body.style.backgroundColor = "grey";
+  } else {
+    body.style.backgroundColor = "white";
+  }
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // Use the browser's geolocation API to get the user's location
