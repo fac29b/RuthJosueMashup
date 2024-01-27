@@ -101,7 +101,7 @@ async function getOpenAIResponse(city) {
  
 
   const openai = new OpenAI({
-    apiKey: , 
+    apiKey: "", 
                   
   });
  // Replace with your actual OpenAI API key
