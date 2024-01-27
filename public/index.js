@@ -2,13 +2,8 @@ const toggleSwitch = document.querySelector("input");
 const body = document.querySelector("body");
 toggleSwitch.addEventListener("change", function() {
   const body = document.querySelector("body");
+  toggleSwitch.checked ? (body.style.backgroundColor = "grey") : (body.style.backgroundColor = "white");
   
-  // Toggle background color based on checkbox state
-  if (toggleSwitch.checked) {
-    body.style.backgroundColor = "grey";
-  } else {
-    body.style.backgroundColor = "white";
-  }
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
