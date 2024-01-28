@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Single+Day&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    
     
 </head>
 <body>
@@ -21,7 +23,11 @@
         </header>
         <section id="location" aria-label="Location"></section>
         <section id="temperature" aria-label="Temperature"></section>
-        <section id="openai-response" aria-label="OpenAI Response">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestiae, ab beatae tenetur molestias culpa harum nulla officia voluptate quas eos labore voluptatum dolorum, laudantium architecto sunt placeat veritatis autem neque.</section>
+        <section class="spinner">
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+            <span class="sr-only">Loading...</span>
+          </section>
+        <section id="openai-response" aria-label="OpenAI Response"></section>
     </main>
 
     <script src="../public/index.js"></script>
