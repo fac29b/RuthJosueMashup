@@ -6,6 +6,7 @@ import { OpenAI } from 'openai';
 import dotenv from 'dotenv';
 dotenv.config();
 
+
 const app = express();
 app.set('trust proxy', true);
 app.use(cors());
@@ -35,6 +36,8 @@ async function findLocation(latitude, longitude) {
           },
         }
       );
+
+      
 
       // Handle the result
       const data = result.unwrap();
@@ -91,8 +94,47 @@ export async function weather(city) {
 }
 
  
+
+
+  const openai = new OpenAI({
+    apiKey: "", 
+                  
+  });
+ // with your actual OpenAI API key
+    
+    // Example prompt: "Generate a short description about {city}"
+    const prompt = `Generate a short description about ${city}`;
+  
+    try {
+      // Assuming there is a method like 'createCompletion' or similar
+      const response = await openai.chat.completions.create({
+        
+      max_tokens: 150,
+        n: 1,messages: [
+          { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: prompt },
+        ],
+        model: "gpt-3.5-turbo",
+      });
+  
+      // Extract the generated text from the response
+      const generatedText = response.choices[0].message.content || 'No description available.';
+      return generatedText;
+    } catch (error) {
+      console.error(error);
+      return 'Error generating description';
+    }
+  }
+app.get('/', async (req, res) => {
+  try {
+    // Use latitude and longitude from the request
+    const { latitude, longitude } = req.query;
+    const location = await findLocation(latitude, longitude);
+    console.log('Location:', location);
+
 export async function getOpenAIResponse(city) {
   const openai = new OpenAI(process.env.OPENAI_API_KEY);
+
 
   const prompt = `Generate a short description about ${city}`;
 

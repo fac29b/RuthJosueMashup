@@ -1,4 +1,19 @@
 
+const toggleSwitch = document.querySelector("input");
+const spinner = document.querySelector(".spinner");
+const weatherContainer = document.querySelector("#weather-container")
+const body = document.querySelector("body");
+const locationElement = document.querySelector('#location');
+const temperatureElement = document.querySelector('#temperature');
+const openaiResponseElement = document.querySelector('#openai-response');
+
+toggleSwitch.addEventListener("change", function() {
+  const body = document.querySelector("body");
+  toggleSwitch.checked ? (weatherContainer.style.backgroundColor = "grey") : (weatherContainer.style.backgroundColor = "white");
+});
+
+
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // Use the browser's geolocation API to get the user's location
@@ -10,10 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log('Data received from server:', data);
 
-    // Update the UI with weather information and OpenAI response
-    const locationElement = document.getElementById('location');
-    const temperatureElement = document.getElementById('temperature');
-    const openaiResponseElement = document.getElementById('openai-response');
+  
 
     // Check if location data is present before updating the UI
     if (data.location) {
@@ -31,9 +43,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check if OpenAI response data is present before updating the UI
     if (data.openaiResponse) {
+
+      openaiResponseElement.textContent = `OpenAI Response: ${data.openaiResponse}`;
+      spinner.style.display = "none";
+
       openaiResponseElement.textContent = `${data.openaiResponse}`;
+
     } else {
-      openaiResponseElement.textContent = 'OpenAI Response: Unknown';
+      openaiResponseElement.textContent = 'OpenAI Response: Unknow';
     }
 
   } catch (error) {
