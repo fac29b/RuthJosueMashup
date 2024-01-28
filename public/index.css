@@ -101,3 +101,21 @@ body {
     color: #333; /* Dark gray */
     line-height: 1.5;
 }
+
+@media (max-width: 356px) {
+  .switch {
+    margin-top: 80px;
+  }
+}
+
+@media (max-width: 354px) {
+  .switch {
+    margin-top: 90px;
+  }
+}
+
+@media (max-width: 301px) {
+  .switch {
+    margin-top: 120px;
+  }
+}
