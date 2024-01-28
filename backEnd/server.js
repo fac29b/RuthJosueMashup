@@ -1,3 +1,4 @@
+
 import express from 'express';
 import { SuperfaceClient } from '@superfaceai/one-sdk';
 import cors from 'cors';
@@ -59,8 +60,7 @@ async function findLocation(latitude, longitude) {
   };
 }
 
-
-async function weather(city) {
+export async function weather(city) {
   // Load the profile
   const profile = await sdk.getProfile('weather/current-city@1.0.3');
 
@@ -80,31 +80,27 @@ async function weather(city) {
     }
   );
   try {
-
     // Handle the result
     const data = result.unwrap();
     return data;
   } catch (error) {
     console.error(error);
     return {
-      ipAddress: ip,
-      country_name: 'Unknown Country',
-      state_prov: 'Unknown State',
-      city: 'Unknown City',
-      latitude: '0.0',
-      longitude: '0.0',
+      description: 'Unknown',
+      feelsLike: 0.0,
+      temperature: 0.0,
     };
   }
- 
 }
-async function getOpenAIResponse(city) {
+
  
+
 
   const openai = new OpenAI({
     apiKey: "", 
                   
   });
- // Replace with your actual OpenAI API key
+ // with your actual OpenAI API key
     
     // Example prompt: "Generate a short description about {city}"
     const prompt = `Generate a short description about ${city}`;
@@ -136,27 +132,62 @@ app.get('/', async (req, res) => {
     const location = await findLocation(latitude, longitude);
     console.log('Location:', location);
 
-    // Check if the city is present in the location response
-    const city = location && location.city ? location.city : 'London';
-
-    // Pass the city to the weather function
-    const weatherData = await weather(city);
-    const openaiResponse = await getOpenAIResponse(city);
+export async function getOpenAIResponse(city) {
+  const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 
-    res.send({
-      location: location || {},
-      weatherData: weatherData || {},
-      openaiResponse: openaiResponse || {},
+  const prompt = `Generate a short description about ${city}`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      max_tokens: 150,
+      n: 1,
+      messages: [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: prompt },
+      ],
+      model: "gpt-3.5-turbo",
     });
+
+
+    const generatedText = response.choices[0].message.content || 'No description available.';
+    return generatedText;
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    return 'Error generating description';
   }
+}
 
-   
-});
+  app.get('/', async (req, res) => {
+    try {
+      // Use latitude and longitude from the request
+      const { latitude, longitude } = req.query;
+      const location = await findLocation(latitude, longitude);
+      console.log('Location:', location);
+  
+      // Check if the city is present in the location response
+      const city = location && location.addressLocality ? location.addressLocality : 'London';
+  
+      // Pass the city to the weather function
+      const weatherData = await weather(city);
+      const openaiResponse = await getOpenAIResponse(city);
+  
+      res.send({
+        location: location || {},
+        weatherData: weatherData || {},
+        openaiResponse: openaiResponse || {},
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
+  
 
 app.listen(3007, () => {
   console.log('SERVER RUNNING AT PORT 3007');
 });
+
+
+export { app, findLocation }; 

@@ -1,3 +1,4 @@
+
 const toggleSwitch = document.querySelector("input");
 const spinner = document.querySelector(".spinner");
 const weatherContainer = document.querySelector("#weather-container")
@@ -10,6 +11,8 @@ toggleSwitch.addEventListener("change", function() {
   const body = document.querySelector("body");
   toggleSwitch.checked ? (weatherContainer.style.backgroundColor = "grey") : (weatherContainer.style.backgroundColor = "white");
 });
+
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -40,8 +43,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check if OpenAI response data is present before updating the UI
     if (data.openaiResponse) {
+
       openaiResponseElement.textContent = `OpenAI Response: ${data.openaiResponse}`;
       spinner.style.display = "none";
+
+      openaiResponseElement.textContent = `${data.openaiResponse}`;
+
     } else {
       openaiResponseElement.textContent = 'OpenAI Response: Unknow';
     }
