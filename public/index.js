@@ -1,8 +1,9 @@
 const toggleSwitch = document.querySelector("input");
+const weatherContainer = document.querySelector("#weather-container")
 const body = document.querySelector("body");
 toggleSwitch.addEventListener("change", function() {
   const body = document.querySelector("body");
-  toggleSwitch.checked ? (body.style.backgroundColor = "grey") : (body.style.backgroundColor = "white");
+  toggleSwitch.checked ? (weatherContainer.style.backgroundColor = "grey") : (weatherContainer.style.backgroundColor = "white");
   
 });
 
