@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       openaiResponseElement.textContent = `OpenAI Response: ${data.openaiResponse}`;
       spinner.style.display = "none";
     } else {
-      openaiResponseElement.textContent = 'OpenAI Response: Unknown';
+      openaiResponseElement.textContent = 'OpenAI Response: Unknow';
     }
 
   } catch (error) {
