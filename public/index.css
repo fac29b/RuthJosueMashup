@@ -95,6 +95,7 @@ body {
 }
 
 #openai-response {
+    text-align: justify;
     margin-top: 20px;
     font-size: 1em;
     color: #333; /* Dark gray */
