@@ -10,19 +10,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <main id="weather-container">
-        <label class="switch">
+    <main id="weather-container" aria-label="Weather Information">
+        <label class="switch" aria-label="Toggle Switch">
             <input type="checkbox">
             <span class="slider round"></span>
           </label>
         <header>
-            <h1>Weather Information</h1>
+            <h1 aria-label="Heading: Weather Information">Weather Information</h1>
         </header>
-        <section id="location"></section>
-        <section id="temperature"></section>
-        <section id="openai-response">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestiae, ab beatae tenetur molestias culpa harum nulla officia voluptate quas eos labore voluptatum dolorum, laudantium architecto sunt placeat veritatis autem neque.</section>
+        <section id="location" aria-label="Location"></section>
+        <section id="temperature" aria-label="Temperature"></section>
+        <section id="openai-response" aria-label="OpenAI Response">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestiae, ab beatae tenetur molestias culpa harum nulla officia voluptate quas eos labore voluptatum dolorum, laudantium architecto sunt placeat veritatis autem neque.</section>
     </main>
 
     <script src="../public/index.js"></script>
 </body>
 </html>
+
