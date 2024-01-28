@@ -1,8 +1,11 @@
 const toggleSwitch = document.querySelector("input");
 const spinner = document.querySelector(".spinner");
-console.log(spinner)
 const weatherContainer = document.querySelector("#weather-container")
 const body = document.querySelector("body");
+const locationElement = document.querySelector('#location');
+const temperatureElement = document.querySelector('#temperature');
+const openaiResponseElement = document.querySelector('#openai-response');
+
 toggleSwitch.addEventListener("change", function() {
   const body = document.querySelector("body");
   toggleSwitch.checked ? (weatherContainer.style.backgroundColor = "grey") : (weatherContainer.style.backgroundColor = "white");
@@ -19,10 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log('Data received from server:', data);
 
-    // Update the UI with weather information and OpenAI response
-    const locationElement = document.getElementById('location');
-    const temperatureElement = document.getElementById('temperature');
-    const openaiResponseElement = document.getElementById('openai-response');
+  
 
     // Check if location data is present before updating the UI
     if (data.location) {
