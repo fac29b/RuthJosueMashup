@@ -1,63 +1,96 @@
-
 const toggleSwitch = document.querySelector("input");
 const spinner = document.querySelector(".spinner");
-const weatherContainer = document.querySelector("#weather-container")
-const body = document.querySelector("body");
+const weatherContainer = document.querySelector("#weather-container");
 const locationElement = document.querySelector('#location');
 const temperatureElement = document.querySelector('#temperature');
 const openaiResponseElement = document.querySelector('#openai-response');
 
-toggleSwitch.addEventListener("change", function() {
-  const body = document.querySelector("body");
+toggleSwitch.addEventListener("change", function () {
   toggleSwitch.checked ? (weatherContainer.style.backgroundColor = "grey") : (weatherContainer.style.backgroundColor = "white");
 });
 
-
-
 document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    // Use the browser's geolocation API to get the user's location
-    const userLocation = await getUserLocation();
+  // Button click event listener for getting location and weather
+  const getLocationWeatherButton = document.getElementById('getLocationWeather');
+  getLocationWeatherButton.addEventListener('click', async () => {
+    try {
+      // Show spinner while fetching location and weather data
+      spinner.style.display = "block";
 
-    // Make API call to your backend server with the user's location
-    const response = await fetch(`http://localhost:3007?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`);
-    const data = await response.json();
+      // Use the browser's geolocation API to get the user's location
+      const userLocation = await getUserLocation();
 
-    console.log('Data received from server:', data);
+      // Make API call to your backend server with the user's location
+      const response = await fetch(`http://localhost:3007?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`);
+      const data = await response.json();
 
-  
+      console.log('Data received from server:', data);
 
-    // Check if location data is present before updating the UI
-    if (data.location) {
-      locationElement.textContent = `Location: ${data.location.addressLocality}, ${data.location.addressCountry}`;
-    } else {
-      locationElement.textContent = 'Location: Unknown';
-    }
+      // Check if location data is present before updating the UI
+      if (data.location) {
+        locationElement.textContent = `Location: ${data.location.addressLocality}, ${data.location.addressCountry}`;
+      } else {
+        locationElement.textContent = 'Location: Unknown';
+      }
 
-    // Check if weather data is present before updating the UI
-    if (data.weatherData) {
-      temperatureElement.textContent = `Temperature: ${data.weatherData.temperature}°C`;
-    } else {
-      temperatureElement.textContent = 'Temperature: Unknown';
-    }
+      // Check if weather data is present before updating the UI
+      if (data.weatherData) {
+        temperatureElement.textContent = `Temperature: ${data.weatherData.temperature}°C`;
+      } else {
+        temperatureElement.textContent = 'Temperature: Unknown';
+      }
 
-    // Check if OpenAI response data is present before updating the UI
-    if (data.openaiResponse) {
-
-      openaiResponseElement.textContent = `OpenAI Response: ${data.openaiResponse}`;
+      // Hide spinner after getting location and weather data
       spinner.style.display = "none";
 
-      openaiResponseElement.textContent = `${data.openaiResponse}`;
+      // Enable the OpenAI button after getting location and weather data
+      document.getElementById('getOpenAIDescription').disabled = false;
 
-    } else {
-      openaiResponseElement.textContent = 'OpenAI Response: Unknow';
+    } catch (error) {
+      console.error(error);
+      // Hide spinner in case of an error
+      spinner.style.display = "none";
     }
+  });
 
-  } catch (error) {
-    console.error(error);
-  }
+  // Button click event listener for getting OpenAI description
+  const getOpenAIDescriptionButton = document.getElementById('getOpenAIDescription');
+  getOpenAIDescriptionButton.addEventListener('click', async () => {
+    try {
+      // Show spinner while fetching OpenAI description
+      spinner.style.display = "block";
+
+      // Make sure to fetch the OpenAI response first
+      const userLocation = await getUserLocation();
+      const response = await fetchOpenAIResponse(userLocation);
+
+      // Check if OpenAI response data is present before updating the UI
+      if (response.openaiResponse) {
+        openaiResponseElement.textContent = response.openaiResponse;
+      } else {
+        openaiResponseElement.textContent = 'OpenAI Response: Unknown';
+      }
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      // Hide spinner after fetching OpenAI description
+      spinner.style.display = "none";
+    }
+  });
 });
 
+async function fetchOpenAIResponse(userLocation) {
+  try {
+    // Your code to fetch OpenAI response
+    const response = await fetch(`http://localhost:3007?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error; // Propagate the error
+  }
+}
 
 async function getUserLocation() {
   return new Promise((resolve, reject) => {
