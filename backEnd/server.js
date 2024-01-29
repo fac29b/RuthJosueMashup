@@ -1,11 +1,9 @@
-
 import express from 'express';
 import { SuperfaceClient } from '@superfaceai/one-sdk';
 import cors from 'cors';
 import { OpenAI } from 'openai';
 import dotenv from 'dotenv';
 dotenv.config();
-
 
 const app = express();
 app.set('trust proxy', true);
@@ -93,48 +91,9 @@ export async function weather(city) {
   }
 }
 
- 
-
-
-  const openai = new OpenAI({
-    apiKey: "", 
-                  
-  });
- // with your actual OpenAI API key
-    
-    // Example prompt: "Generate a short description about {city}"
-    const prompt = `Generate a short description about ${city}`;
-  
-    try {
-      // Assuming there is a method like 'createCompletion' or similar
-      const response = await openai.chat.completions.create({
-        
-      max_tokens: 150,
-        n: 1,messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: prompt },
-        ],
-        model: "gpt-3.5-turbo",
-      });
-  
-      // Extract the generated text from the response
-      const generatedText = response.choices[0].message.content || 'No description available.';
-      return generatedText;
-    } catch (error) {
-      console.error(error);
-      return 'Error generating description';
-    }
-  }
-app.get('/', async (req, res) => {
-  try {
-    // Use latitude and longitude from the request
-    const { latitude, longitude } = req.query;
-    const location = await findLocation(latitude, longitude);
-    console.log('Location:', location);
 
 export async function getOpenAIResponse(city) {
   const openai = new OpenAI(process.env.OPENAI_API_KEY);
-
 
   const prompt = `Generate a short description about ${city}`;
 
@@ -149,7 +108,6 @@ export async function getOpenAIResponse(city) {
       model: "gpt-3.5-turbo",
     });
 
-
     const generatedText = response.choices[0].message.content || 'No description available.';
     return generatedText;
   } catch (error) {
@@ -158,36 +116,36 @@ export async function getOpenAIResponse(city) {
   }
 }
 
-  app.get('/', async (req, res) => {
-    try {
-      // Use latitude and longitude from the request
-      const { latitude, longitude } = req.query;
-      const location = await findLocation(latitude, longitude);
-      console.log('Location:', location);
-  
-      // Check if the city is present in the location response
-      const city = location && location.addressLocality ? location.addressLocality : 'London';
-  
-      // Pass the city to the weather function
-      const weatherData = await weather(city);
-      const openaiResponse = await getOpenAIResponse(city);
-  
-      res.send({
-        location: location || {},
-        weatherData: weatherData || {},
-        openaiResponse: openaiResponse || {},
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  
-  
+app.get('/', async (req, res) => {
+  let location; // Initialize location
+
+  try {
+    // Use latitude and longitude from the request
+    const { latitude, longitude } = req.query;
+    location = await findLocation(latitude, longitude);
+    console.log('Location:', location);
+
+    // Check if the city is present in the location response
+    const city = location && location.addressLocality ? location.addressLocality : 'London';
+
+    // Pass the city to the weather function
+    const weatherData = await weather(city);
+    const openaiResponse = await getOpenAIResponse(city);
+
+    res.send({
+      location: location || {},
+      weatherData: weatherData || {},
+      openaiResponse: openaiResponse || {},
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.listen(3007, () => {
   console.log('SERVER RUNNING AT PORT 3007');
 });
 
-
-export { app, findLocation }; 
+export { app, findLocation };
