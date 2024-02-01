@@ -29,7 +29,7 @@ async function findLocation(latitude, longitude) {
           security: {
             apikey: {
               apikey:
-                "b89a10c0495c19371dd07d5a941283700cd68c1a6649b7161518dd4d",
+                process.env.API_DATA_KEY,
             },
           },
         }
@@ -69,7 +69,6 @@ export async function weather(city) {
       security: {
         apikey: {
           apikey: process.env.WEATHER_API_KEY,
-          // apikey: "93741fb9dc601def24613b455649816c",
         },
       },
     }
@@ -89,8 +88,7 @@ export async function weather(city) {
 }
 
 export async function getOpenAIResponse(city) {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  // const openai = new OpenAI({apiKey: "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"});
+  const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY,});
 
   const prompt = `Generate a short description about ${city}`;
 
@@ -145,7 +143,7 @@ app.get("/", async (req, res) => {
 });
 
 app.listen(3007, () => {
-  console.log("SERVER RUNNING AT PORT 3007");
+  console.log("SERVER RUNNING AT PORT 3008");
 });
 
 console.log("Environment:\n", process.env);
